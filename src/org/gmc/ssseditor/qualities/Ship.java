@@ -57,6 +57,8 @@ public class Ship extends QualityItem
 		// and the latter the actual entity.
 		// AssignToSlot will have ID 102889? and Tag "Ship Equipment Slot".
 		super(JSONUtil.getString(quality, "Name"), JSONUtil.getInteger(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Ship.categoryName);
+		this.setQuality(quality);
+
 		// Extract nodes of interest.
 		//   AssignedToSlot: where equipped.
 		//   Enhancements: Array. Known entries:
@@ -69,25 +71,25 @@ public class Ship extends QualityItem
 			for (Object enhancementItem: enhancements) {
 				if (enhancementItem instanceof Map<?, ?>) {
 					Map<String, Object> enhancement = (Map<String, Object>) enhancementItem;
-					String associatedName = JSONUtil.getString(enhancement, "AssociatedQuality", "Name");
-					if (associatedName != null) {
-						switch (associatedName) {
-							case "Quarters":
+					int associatedId = JSONUtil.getInteger(enhancement, "AssociatedQuality", "Id");
+					if (associatedId > 0) {
+						switch (associatedId) {
+							case 106992: // "Quarters":
 							{
 								this.crewCapacity = enhancement;
 								break;
 							}
-							case "Ship Weight":
+							case 109845: // "Ship Weight":
 							{
 								this.weight = enhancement;
 								break;
 							}
-							case "MaxHull":
+							case 105361: // "MaxHull":
 							{
 								this.maxHull = enhancement;
 								break; 
 							}
-							case "Hold":
+							case 102031: // "Hold":
 							{
 								this.holdCapacity = enhancement;
 								break;
@@ -97,6 +99,21 @@ public class Ship extends QualityItem
 				}
 			}
 		}
+	}
+
+	/**
+	 * Construct a new Ship instance as a copy of the given Ship instance.
+	 * @param copyFrom Source Ship.
+	 * @param quality Save file quality.
+	 */
+	public Ship(Ship copyFrom, Map<String, Object> quality)
+	{
+		super(copyFrom.getName(), (int) copyFrom.getTag(), copyFrom.getSlot(), Ship.categoryName);
+		this.crewCapacity = copyFrom.crewCapacity;
+		this.weight = copyFrom.weight;
+		this.maxHull = copyFrom.maxHull;
+		this.holdCapacity = copyFrom.holdCapacity;
+		this.setQuality(quality);
 	}
 
 	/**

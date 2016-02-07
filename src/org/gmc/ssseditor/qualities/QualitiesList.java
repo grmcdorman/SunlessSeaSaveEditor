@@ -31,17 +31,20 @@ public class QualitiesList
 	public QualitiesList(ArrayList<Object> jsonQualities, boolean isConfigurationFile)
 	{
 		this.list = jsonQualities;
+
 		for (Object qualityObject: jsonQualities)
 		{
 			Map<String, Object> quality = null;
+			Map<String, Object> baseQuality = null;
 			if (qualityObject instanceof Map<?, ?>) {
 				quality = (Map<String, Object>) qualityObject;
 				if (!isConfigurationFile) {
-					// Save file. Look for EquippedPossession/AssociatedQuality. quality.get("EquippedPossession")
+					// Save file. Look for EquippedPossession/AssociatedQuality.
+					baseQuality = quality;
 					quality = JSONUtil.getObject(quality, "EquippedPossession", "AssociatedQuality");
 				}
 				if (quality != null) {
-					this.load(quality);
+					this.load(quality, baseQuality);
 				}
 			}
 		}
@@ -64,7 +67,7 @@ public class QualitiesList
 	public void addQuality(Map<String, Object> newQuality)
 	{
 		this.list.add(newQuality);
-		this.load(newQuality);
+		this.load(newQuality, null);
 	}
 
 	public void removeQuality(Map<String, Object> quality)
@@ -77,7 +80,7 @@ public class QualitiesList
 	 * Load one quality.
 	 * @param qualityItem Quality item to load.
 	 */
-	private void load(Map<String, Object> qualityItem)
+	private void load(Map<String, Object> qualityItem, Map<String, Object> sourceQualityItem)
 	{
 		String category = JSONUtil.getString(qualityItem, "Category");
 		if (category != null) {
@@ -92,7 +95,9 @@ public class QualitiesList
 				list = new LinkedList<QualityItem>();
 				this.loadedQualities.put(factory.getQualityName(), list);
 			}
-			list.add(factory.createItem(qualityItem));
+			QualityItem item = factory.createItem(qualityItem);
+			item.setQuality(sourceQualityItem);
+			list.add(item);
 		}
 	}
 }

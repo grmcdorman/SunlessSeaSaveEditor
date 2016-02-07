@@ -27,6 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.NumberFormatter;
 
@@ -49,6 +50,8 @@ public class SSSaveEditorUI {
 	static public NumberFormatter formatter;
 	private TitledBorder titleBorder;
 	private TitledBorder shipBorder;
+	private JPanel shipPanel;
+	private JPanel titlePanel;
 	public JMenuItem saveMenuItem;
 	public JMenuItem saveAsMenuItem;
 	public JLabel currentPortLabel;
@@ -62,10 +65,11 @@ public class SSSaveEditorUI {
 	public JLabel foLabel;
 	public JLabel usedCapacity;
 
-	public QualityItemUI shipCrewCapacityField;
-	public QualityItemUI shipWeightField;
-	public QualityItemUI shipMaxHullField;
-	public QualityItemUI shipCargoCapacityField;
+	private JLabel shipCrewCapacity;
+	private JLabel shipWeight;
+	private JLabel shipMaxHull;
+	private JLabel shipCargoCapacity;
+
 	public QualityItemUI echosField;
 	public QualityItemUI fuelField;
 	public QualityItemUI suppliesField;
@@ -124,19 +128,19 @@ public class SSSaveEditorUI {
 
 		// * Summary.
 		this.titleBorder = BorderFactory.createTitledBorder("Open a save file");
-		JPanel titlePanel = new JPanel();
-		titlePanel.setLayout(new GridLayout());
-		titlePanel.setBorder(this.titleBorder);
-		this.playerLabel = this.addLabeledDisplay(titlePanel, "Zee Captain", row, 0);
-		this.currentPortLabel = this.addLabeledDisplay(titlePanel, "Current Port", row, 2);
-		this.inGameDateLabel = this.addLabeledDisplay(titlePanel, "In-Game Date", row, 4);
+		this.titlePanel = new JPanel();
+		this.titlePanel.setLayout(new GridLayout());
+		this.titlePanel.setBorder(this.titleBorder);
+		this.playerLabel = this.addLabeledDisplay(this.titlePanel, "Zee Captain", row, 0);
+		this.currentPortLabel = this.addLabeledDisplay(this.titlePanel, "Current Port", row, 2);
+		this.inGameDateLabel = this.addLabeledDisplay(this.titlePanel, "In-Game Date", row, 4);
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.gridwidth = 2;
 		constraints.gridheight = 1;
 		constraints.fill = GridBagConstraints.VERTICAL;
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		dataPanel.add(titlePanel, constraints);
+		dataPanel.add(this.titlePanel, constraints);
 		
 		++row;
 		this.createShipPanel(dataPanel, row, 0);
@@ -188,6 +192,7 @@ public class SSSaveEditorUI {
 	public void setTitle(String text)
 	{
 		this.titleBorder.setTitle(text);
+		this.titlePanel.repaint();
 	}
 
 	/**
@@ -197,6 +202,7 @@ public class SSSaveEditorUI {
 	public void setShipName(String text)
 	{
 		this.shipBorder.setTitle(text);
+		this.shipPanel.repaint();
 	}
 
 	/**
@@ -336,7 +342,27 @@ public class SSSaveEditorUI {
 	
 	public void displayErrorDialog(String message, String title)
 	{
-		
+		JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.ERROR_MESSAGE);
+	}
+
+	public void setShipCrewCapacity(int capacity)
+	{
+		this.shipCrewCapacity.setText(Integer.toString(capacity));
+	}
+
+	public void setShipCargoCapacity(int capacity)
+	{
+		this.shipCargoCapacity.setText(Integer.toString(capacity));
+	}
+
+	public void setShipWeight(int weight)
+	{
+		this.shipWeight.setText(Integer.toString(weight));
+	}
+
+	public void setShipMaxHull(int hull)
+	{
+		this.shipMaxHull.setText(Integer.toString(hull));
 	}
 
 	private void onFileOpen()
@@ -374,11 +400,11 @@ public class SSSaveEditorUI {
 	{
 		JPanel basicInventoryPanel = this.createDisplayPanel("Basic Inventory");
 		int inventoryRow = 0;
-		this.echosField = new QualityItemUI(basicInventoryPanel, ItemTags.echos.getName(), inventoryRow, 0);
-		this.fuelField = new QualityItemUI(basicInventoryPanel, ItemTags.fuel.getName(), inventoryRow, 2);
+		this.echosField = new QualityItemUI(basicInventoryPanel, ItemTags.echos, inventoryRow, 0);
+		this.fuelField = new QualityItemUI(basicInventoryPanel, ItemTags.fuel, inventoryRow, 2);
 		
 		++inventoryRow;
-		this.suppliesField = new QualityItemUI(basicInventoryPanel, ItemTags.supplies.getName(), inventoryRow, 0);
+		this.suppliesField = new QualityItemUI(basicInventoryPanel, ItemTags.supplies, inventoryRow, 0);
 
 		++inventoryRow;
 
@@ -398,22 +424,22 @@ public class SSSaveEditorUI {
 	{
 		JPanel attributesPanel = this.createDisplayPanel("Attributes");
 		int attributesRow = 0;
-		this.terrorField = new QualityItemUI(attributesPanel, ItemTags.terror.getName(), attributesRow, 0);
-		this.hullField = new QualityItemUI(attributesPanel, ItemTags.hull.getName(), attributesRow, 2);
+		this.terrorField = new QualityItemUI(attributesPanel, ItemTags.terror, attributesRow, 0);
+		this.hullField = new QualityItemUI(attributesPanel, ItemTags.hull, attributesRow, 2);
 
 		++attributesRow;
-		this.mirrorsField = new QualityItemUI(attributesPanel, ItemTags.mirrors.getName(), attributesRow, 0);
-		this.ironField = new QualityItemUI(attributesPanel, ItemTags.iron.getName(), attributesRow, 2);
-
-
-		++attributesRow;
-		this.pagesField = new QualityItemUI(attributesPanel, ItemTags.pages.getName(), attributesRow, 0);
-		this.heartsField = new QualityItemUI(attributesPanel, ItemTags.hearts.getName(), attributesRow, 2);
+		this.mirrorsField = new QualityItemUI(attributesPanel, ItemTags.mirrors, attributesRow, 0);
+		this.ironField = new QualityItemUI(attributesPanel, ItemTags.iron, attributesRow, 2);
 
 
 		++attributesRow;
-		this.veilsField = new QualityItemUI(attributesPanel, ItemTags.veils.getName(), attributesRow, 0);
-		this.crewField = new QualityItemUI(attributesPanel, ItemTags.crew.getName(), attributesRow, 2);
+		this.pagesField = new QualityItemUI(attributesPanel, ItemTags.pages, attributesRow, 0);
+		this.heartsField = new QualityItemUI(attributesPanel, ItemTags.hearts, attributesRow, 2);
+
+
+		++attributesRow;
+		this.veilsField = new QualityItemUI(attributesPanel, ItemTags.veils, attributesRow, 0);
+		this.crewField = new QualityItemUI(attributesPanel, ItemTags.crew, attributesRow, 2);
 
 
 		++attributesRow;
@@ -461,24 +487,24 @@ public class SSSaveEditorUI {
 	 */
 	private int createShipPanel(JPanel dataPanel, int row, int col)
 	{
-		JPanel shipPanel = createDisplayPanel("Ship");
-		this.shipBorder = (TitledBorder) shipPanel.getBorder();
+		this.shipBorder = new TitledBorder("Ship");
+		this.shipPanel = createDisplayPanel(this.shipBorder);
 
 		// *** Ship.
 		int shipRow = 0;
-		this.shipCrewCapacityField = new QualityItemUI(shipPanel, "Crew Capacity", shipRow, 0);
-		this.shipMaxHullField = new QualityItemUI(shipPanel, "Maximum Hull", shipRow, 2);
+		this.shipCrewCapacity = this.addLabeledDisplay(this.shipPanel, "Crew Capacity", shipRow, 0);
+		this.shipMaxHull = this.addLabeledDisplay(this.shipPanel, "Maximum Hull", shipRow, 2);
 		
 		++shipRow;
-		this.shipCargoCapacityField = new QualityItemUI(shipPanel, "Cargo Capacity", shipRow, 0);
-		this.shipWeightField = new QualityItemUI(shipPanel, "Weight", shipRow, 2);
+		this.shipCargoCapacity = this.addLabeledDisplay(this.shipPanel, "Cargo Capacity", shipRow, 0);
+		this.shipWeight = this.addLabeledDisplay(this.shipPanel, "Weight", shipRow, 2);
 
 		++shipRow;
 
-		this.usedCapacity = this.addLabeledDisplay(shipPanel, "Cargo", shipRow, 0);
+		this.usedCapacity = this.addLabeledDisplay(this.shipPanel, "Cargo", shipRow, 0);
 		
 		++shipRow;
-		this.addDisplayPanel(dataPanel, row, col, shipPanel, shipRow);
+		this.addDisplayPanel(dataPanel, row, col, this.shipPanel, shipRow);
 		return shipRow;
 	}
 
@@ -489,12 +515,22 @@ public class SSSaveEditorUI {
 	 */
 	private JPanel createDisplayPanel(String title)
 	{
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.setBorder(BorderFactory.createTitledBorder(title));
-		return panel;
+		return this.createDisplayPanel(BorderFactory.createTitledBorder(title));
 	}
 
+	/**
+	 * Create a generic display panel.
+	 * @param border Border for panel.
+	 * @return New panel.
+	 */
+	private JPanel createDisplayPanel(Border border)
+	{
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridBagLayout());
+		panel.setBorder(border);
+		return panel;
+		
+	}
 	/**
 	 * Add a display panel to a parent panel.
 	 * @param dataPanel Parent panel

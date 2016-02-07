@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.gmc.ssseditor.JSONUtil;
 import org.gmc.ssseditor.qualities.QualityItem;
@@ -70,6 +72,30 @@ public class QualityItemUI {
 		this.mutate();
 	}
 
+	/**
+	 * Package constructor for information panels outside of the Quality lists.
+	 * @param panel Parent panel for UI components.
+	 * @param item QualityItem.
+	 * @param saveItem Save file Quality.
+	 * @param row Row for UI in parent panel.
+	 * @param col Column for UI in parent panel.
+	 */
+	QualityItemUI(JPanel panel, QualityItem item, int row, int col)
+	{
+		this.item = item;
+		this.saveItem = null;
+		this.constructUI(panel, row, col, item.getName());
+		this.hideButtons();
+	}
+
+	/**
+	 * Package constructor for information panels outside of the Quality lists.
+	 * @param panel Parent panel for UI components.
+	 * @param item QualityItem.
+	 * @param saveItem Save file Quality.
+	 * @param row Row for UI in parent panel.
+	 * @param col Column for UI in parent panel.
+	 */
 	QualityItemUI(JPanel panel, String name, int row, int col)
 	{
 		this.item = null;
@@ -146,7 +172,7 @@ public class QualityItemUI {
 	 */
 	public void setValue(Map<String, Object> quality)
 	{
-		this.setValue(JSONUtil.getString(quality, "Level"));
+		this.setValue(Integer.toString(JSONUtil.getInteger(quality, "Level")));
 	}
 	
 	/**
@@ -155,6 +181,12 @@ public class QualityItemUI {
 	public void update()
 	{
 		this.setValue(this.saveItem);
+	}
+
+	public void setSaveItem(Map<String, Object> newItem)
+	{
+		this.saveItem = newItem;
+		this.update();
 	}
 
 	/**
@@ -182,9 +214,18 @@ public class QualityItemUI {
 	 */
 	private void onChange()
 	{
-		for (IQualityItemUIEvents handler : this.eventHandlers)
+		if (!this.valueField.getText().isEmpty())
 		{
-			handler.onValueChanged(this, this.item, this.saveItem);
+			try
+			{
+				Integer.parseInt(this.valueField.getText());
+				for (IQualityItemUIEvents handler : this.eventHandlers)
+				{
+					handler.onValueChanged(this, this.item, this.saveItem);
+				}
+			} catch (NumberFormatException e) {
+				// Ignore it. The formatter should fix it on focus-out or similar.
+			}
 		}
 	}
 	
@@ -231,10 +272,22 @@ public class QualityItemUI {
 		constraints.gridy = row;
 		panel.add(this.addButton, constraints);
 
-		this.valueField.addActionListener(new ActionListener() {
+		this.valueField.getDocument().addDocumentListener(new DocumentListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e)
+			public void removeUpdate(DocumentEvent e)
+			{
+				QualityItemUI.this.onChange();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e)
+			{
+				QualityItemUI.this.onChange();
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e)
 			{
 				QualityItemUI.this.onChange();
 			}

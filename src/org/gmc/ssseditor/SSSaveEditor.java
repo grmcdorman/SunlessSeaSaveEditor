@@ -64,7 +64,6 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	private Ship ship;
 
 	private QualitiesList saveFileQualities;
-	@SuppressWarnings("unused")
 	private QualitiesList configurationQualities;
 
 	/**
@@ -165,8 +164,6 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		this.setQualityFromUI(this.heartsQuality, this.ui.heartsField);
 		this.setQualityFromUI(this.veilsQuality, this.ui.veilsField);
 		this.setQualityFromUI(this.crewQuality, this.ui.crewField);
-
-		this.saveShip();
 
 		// Set items from generic list.
 		for (Entry<Map<String, Object>, QualityItemUI> entry : this.qualitiesFieldsMap.entrySet()) {
@@ -301,10 +298,10 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		displayedQualities.add(ItemTags.crew.getTag());
 
 		this.ui.setShipName("No ship?");
-		this.ui.shipCrewCapacityField.setValue("0");
-		this.ui.shipCargoCapacityField.setValue("0");
-		this.ui.shipMaxHullField.setValue("0");
-		this.ui.shipWeightField.setValue("0");
+		this.ui.setShipCrewCapacity(0);
+		this.ui.setShipCargoCapacity(0);
+		this.ui.setShipMaxHull(0);
+		this.ui.setShipWeight(0);
 		this.ship = null;
 		this.ui.cookLabel.setText("");
 		this.ui.foLabel.setText("");
@@ -318,15 +315,35 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		this.qualitiesFieldsMap.clear();
 		this.saveFileQualities = new QualitiesList(qualities, false);
 		
-		// Find the Ship.
-		List<QualityItem> shipList = this.saveFileQualities.GetQualities(Ship.categoryName);
-		if (shipList != null && shipList.size() == 1) {
-			this.ship = (Ship) shipList.get(0);
+		// Find the Ship. This will be an entry in the Qualities with an AssociatedQualityId=102889 {Curiosity,CurrentShip}.
+		for (Object item : qualities) {
+			if (item instanceof Map<?,?>) {
+				Map<String, Object> quality = (Map<String, Object>) item;
+				if (JSONUtil.getInteger(quality, "AssociatedQualityId") == 102889) {
+					// Need to find the EquippedPossession/AssociatedQualityId to find the Ship definition.
+					int shipId = JSONUtil.getInteger(quality,  "EquippedPossession", "AssociatedQualityId");
+					Ship shipBase = null; 
+					List<QualityItem> ships = this.configurationQualities.GetQualities(Ship.categoryName);
+					for (QualityItem shipCandidate : ships) {
+						if (shipCandidate.getTag() == shipId) {
+							shipBase = (Ship) shipCandidate;
+							break;
+						}
+					}
+					if (shipBase != null) {
+						this.ship = new Ship(shipBase, quality);
+					}
+					break;
+				}
+			}
+		}
+
+		if (this.ship != null) {
 			this.ui.setShipName(this.ship.getName());
-			this.ui.shipCrewCapacityField.setValue(Integer.toString(this.ship.getCrewCapacity()));
-			this.ui.shipCargoCapacityField.setValue(Integer.toString(this.ship.getHoldCapacity()));
-			this.ui.shipMaxHullField.setValue(Integer.toString(this.ship.getMaxHull()));
-			this.ui.shipWeightField.setValue(Integer.toString(this.ship.getWeight()));
+			this.ui.setShipCrewCapacity(this.ship.getCrewCapacity());
+			this.ui.setShipCargoCapacity(this.ship.getHoldCapacity());
+			this.ui.setShipMaxHull(this.ship.getMaxHull());
+			this.ui.setShipWeight(this.ship.getWeight());
 			displayedQualities.add(this.ship.getTag());
 		}
 		
@@ -374,7 +391,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 				Map<String, Object> saveQuality = saveQualityList.get(new Long(item.getTag()));
 				if (saveQuality != null) {
 					this.addQualityToUI(item, saveQuality);
-					if (item.isCargo()) {
+					if (item.isCargo() && item.getSlot() == null) {
 						this.cargoQuantity += JSONUtil.getInteger(saveQuality, "Level");
 					}
 				} else {
@@ -383,20 +400,8 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 			}
 		}
 
+		this.cargoQuantity += JSONUtil.getInteger(this.fuelQuality, "Level") + JSONUtil.getInteger(this.suppliesQuality, "Level");
 		this.ui.usedCapacity.setText(Integer.toString(this.cargoQuantity));
-	}
-	
-	/**
-	 * Save ship-related data from the UI.
-	 */
-	private void saveShip()
-	{
-		if (this.ship != null) {
-			this.ship.setCrewCapacity(Integer.parseInt(this.ui.shipCrewCapacityField.getValue()));
-			this.ship.setHoldCapacity(Integer.parseInt(this.ui.shipCargoCapacityField.getValue()));
-			this.ship.setMaxHull(Integer.parseInt(this.ui.shipMaxHullField.getValue()));
-			this.ship.setWeight(Integer.parseInt(this.ui.shipWeightField.getValue()));
-		}
 	}
 
 	/**
@@ -596,7 +601,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	{
 		Object value = JSONUtil.getKeyValue(json, keys);
 		if (value != null) {
-			label.setValue(value.toString());
+			label.setSaveItem(json);
 		}
 	}
 
@@ -653,7 +658,10 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 			int oldValue = JSONUtil.getInteger(saveItem, "Level");
 			int newValue = Integer.parseInt(ui.getValue());
 			SSSaveEditor.this.cargoQuantity += newValue - oldValue;
-			saveItem.put("Level",  new Long(newValue));
+			// Save item may be null for pre-defined Quality input fields (on the display panels).
+			if (saveItem != null) {
+				saveItem.put("Level",  new Long(newValue));
+			}
 			SSSaveEditor.this.ui.usedCapacity.setText(Integer.toString(SSSaveEditor.this.cargoQuantity));
 		}		
 	}

@@ -24,6 +24,8 @@ public class QualityItem
 	private final String slot;
 	private final String category;
 	
+	private Map<String, Object> quality;
+
 	/**
 	 * All items known, by ID.
 	 */
@@ -190,6 +192,16 @@ public class QualityItem
 		quality.put("CompletionMessage", null);
 
 		return quality;
+	}
+
+	public Map<String, Object> getQuality()
+	{
+		return quality;
+	}
+
+	protected void setQuality(Map<String, Object> quality)
+	{
+		this.quality = quality;
 	}
 
 	/**
