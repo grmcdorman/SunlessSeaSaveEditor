@@ -385,7 +385,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		for (String category : QualityItem.getKnownCategories()) {
 			// Need the items in this category sorted by Name.
 			for (QualityItem item : QualityItem.getItemsInCategory(category)) {
-				Map<String, Object> saveQuality = saveQualityList.get(new Long(item.getTag()));
+				Map<String, Object> saveQuality = saveQualityList.get(item.getTag());
 				if (saveQuality != null) {
 					this.addQualityToUI(item, saveQuality);
 					if (item.isCargo() && item.getSlot() == null) {

@@ -99,7 +99,7 @@ public class QualityItem
 	 * @param tag Item tag.
 	 * @return Inventory item, or null if not known.
 	 */
-	public static QualityItem getKnownItem(int tag)
+	public static QualityItem getKnownItem(long tag)
 	{
 		return QualityItem.allItems.get(tag);
 	}
