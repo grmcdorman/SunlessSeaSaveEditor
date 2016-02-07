@@ -138,58 +138,62 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	 */
 	private void saveTo(File saveFile, boolean confirm)
 	{
-		// If the file doesn't have an extension, add ".json".
-		String name = saveFile.getName();
-		if (name.indexOf('.') == 1) {
-			saveFile = new File(saveFile.getPath() + ".json");
-		}
-
-		if (this.ship != null && Integer.parseInt(this.ui.hullField.getValue()) > this.ship.getMaxHull()) {
-			if (!this.ui.displayWarningDialog("Hull value " + this.ui.hullField.getValue() + "is above maximum, continue?", "Check Hull")) {
-				return;
+		try {
+			// If the file doesn't have an extension, add ".json".
+			String name = saveFile.getName();
+			if (name.indexOf('.') == 1) {
+				saveFile = new File(saveFile.getPath() + ".json");
 			}
-		}
-
-		// Update JSON.
-		this.setQualityFromUI(this.echosQuality, this.ui.echosField);
-		this.setQualityFromUI(this.fuelQuality, this.ui.fuelField);
-		this.setQualityFromUI(this.suppliesQuality, this.ui.suppliesField);
-		this.setQualityFromUI(this.terrorQuality, this.ui.terrorField);
-		this.setQualityFromUI(this.hullQuality, this.ui.hullField);
-		this.setQualityFromUI(this.mirrorsQuality, this.ui.mirrorsField);
-		this.setQualityFromUI(this.ironQuality, this.ui.ironField);
-		this.setQualityFromUI(this.pagesQuality, this.ui.pagesField);
-		this.setQualityFromUI(this.heartsQuality, this.ui.heartsField);
-		this.setQualityFromUI(this.veilsQuality, this.ui.veilsField);
-		this.setQualityFromUI(this.crewQuality, this.ui.crewField);
-
-		// Set items from generic list.
-		for (Entry<Map<String, Object>, QualityItemUI> entry : this.qualitiesFieldsMap.entrySet()) {
-			this.setQualityFromUI(entry.getKey(), entry.getValue());
-		}
-
-		if (saveFile.exists())
-		{
-			if (confirm) {
-				if (!this.ui.displayWarningDialog("Overwrite " + saveFile.getName() + "?", "Overwrite")) {
+	
+			if (this.ship != null && Integer.parseInt(this.ui.hullField.getValue()) > this.ship.getMaxHull()) {
+				if (!this.ui.displayWarningDialog("Hull value " + this.ui.hullField.getValue() + "is above maximum, continue?", "Check Hull")) {
 					return;
 				}
 			}
-			File backup = new File(saveFile.getPath() + ".bak");
-			backup.delete();
-			saveFile.renameTo(backup);
-		}
-
-		try (OutputStream output = new FileOutputStream(saveFile)) {
-			this.jsonLib.serialize(this.data, output);
-			this.ui.displayMessageDialog("Saved to " + saveFile.getName(), "Saved");
-			// Update current file and title text.
-			this.openFile = saveFile;
-			this.ui.setTitle(saveFile.getName());
-		} catch (FileNotFoundException e) {
-			this.ui.displayErrorDialog("When writing, file not found (possibly missing directory)", "Error");
-		} catch (IOException e) {
-			this.ui.displayErrorDialog("Error writing file", "Error");
+	
+			// Update JSON.
+			this.setQualityFromUI(this.echosQuality, this.ui.echosField);
+			this.setQualityFromUI(this.fuelQuality, this.ui.fuelField);
+			this.setQualityFromUI(this.suppliesQuality, this.ui.suppliesField);
+			this.setQualityFromUI(this.terrorQuality, this.ui.terrorField);
+			this.setQualityFromUI(this.hullQuality, this.ui.hullField);
+			this.setQualityFromUI(this.mirrorsQuality, this.ui.mirrorsField);
+			this.setQualityFromUI(this.ironQuality, this.ui.ironField);
+			this.setQualityFromUI(this.pagesQuality, this.ui.pagesField);
+			this.setQualityFromUI(this.heartsQuality, this.ui.heartsField);
+			this.setQualityFromUI(this.veilsQuality, this.ui.veilsField);
+			this.setQualityFromUI(this.crewQuality, this.ui.crewField);
+	
+			// Set items from generic list.
+			for (Entry<Map<String, Object>, QualityItemUI> entry : this.qualitiesFieldsMap.entrySet()) {
+				this.setQualityFromUI(entry.getKey(), entry.getValue());
+			}
+	
+			if (saveFile.exists())
+			{
+				if (confirm) {
+					if (!this.ui.displayWarningDialog("Overwrite " + saveFile.getName() + "?", "Overwrite")) {
+						return;
+					}
+				}
+				File backup = new File(saveFile.getPath() + ".bak");
+				backup.delete();
+				saveFile.renameTo(backup);
+			}
+	
+			try (OutputStream output = new FileOutputStream(saveFile)) {
+				this.jsonLib.serialize(this.data, output);
+				this.ui.displayMessageDialog("Saved to " + saveFile.getName(), "Saved");
+				// Update current file and title text.
+				this.openFile = saveFile;
+				this.ui.setTitle(saveFile.getName());
+			} catch (FileNotFoundException e) {
+				this.ui.displayErrorDialog("When writing, file not found (possibly missing directory)", "Error");
+			} catch (IOException e) {
+				this.ui.displayErrorDialog("Error writing file", "Error");
+			}
+		} catch (NumberFormatException e) {
+			this.ui.displayErrorDialog("There was some input field with a non-numeric string in it; can't save.", "Error");
 		}
 	}
 
@@ -520,16 +524,9 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		if (valueObject != null && valueObject instanceof Long) {
 			QualityItemUI field;
 			field = this.ui.addToQualityPanel(item, saveQuality);
-			if (item.isCargo()) {
-				setUpCargoUIField(field, saveQuality);
-			}
 			this.qualitiesFieldsMap.put(saveQuality, field);
+			field.addEventHandler(this);
 		}
-	}
-
-	private void setUpCargoUIField(QualityItemUI field, Map<String, Object> saveQuality)
-	{
-		field.addEventHandler(this);
 	}
 
 	/**
@@ -579,10 +576,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		Map<String, Object> qualityItem = this.getQuality(qualities, (int) item.getTag());
 		if (qualityItem != null) {
 			this.setUIFromKey(field, qualityItem, "Level");
-			if (item.isCargo())
-			{
-				this.setUpCargoUIField(field, qualityItem);
-			}
+			field.addEventHandler(this);
 		}
 
 		return qualityItem;
@@ -668,6 +662,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	{
 		Map<String, Object> newQuality = item.getTemplateObject();
 		this.saveFileQualities.addQuality(newQuality);
+		this.qualitiesFieldsMap.put(newQuality, ui);
 		ui.mutate(newQuality);
 	}
 
@@ -675,6 +670,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	public void onRequestDelete(QualityItemUI ui, QualityItem item, Map<String, Object> saveItem)
 	{
 		this.saveFileQualities.removeQuality(saveItem);
+		this.qualitiesFieldsMap.remove(saveItem);
 		ui.mutate();
 	}
 }
