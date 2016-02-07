@@ -43,7 +43,7 @@ public class Good extends QualityItem
 	 */
 	public Good(Map<String, Object> quality)
 	{
-		super(JSONUtil.getString(quality, "Name"), JSONUtil.getInteger(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Good.categoryName);
+		super(JSONUtil.getString(quality, "Name"), JSONUtil.getLong(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Good.categoryName);
 		// Other nodes of interest:
 		// "Tag": Usually where it can be equipped, e.g. "Equipment - Deck" or "Equipment - Bridge".
 		//   Enhancements: Qualities enhanced (or degraded) by this Good, e.g. Mirrors will be
@@ -63,7 +63,7 @@ public class Good extends QualityItem
 	 * @param name Good name.
 	 * @param id Good ID.
 	 */
-	public Good(String name, int id)
+	public Good(String name, long id)
 	{
 		super(name, id, null, Good.categoryName);
 	}

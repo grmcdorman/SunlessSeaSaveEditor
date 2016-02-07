@@ -22,7 +22,6 @@ import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.gmc.ssseditor.qualities.Companion;
@@ -75,7 +74,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	/**
 	 * Total quantity of cargo.
 	 */
-	private int cargoQuantity;
+	private long cargoQuantity;
 
 	/**
 	 * Launch the application.
@@ -146,8 +145,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		}
 
 		if (this.ship != null && Integer.parseInt(this.ui.hullField.getValue()) > this.ship.getMaxHull()) {
-			int choice = this.ui.displayWarningDialog("Hull value " + this.ui.hullField.getValue() + "is above maximum, continue?", "Check Hull");
-			if (choice != JOptionPane.OK_OPTION) {
+			if (!this.ui.displayWarningDialog("Hull value " + this.ui.hullField.getValue() + "is above maximum, continue?", "Check Hull")) {
 				return;
 			}
 		}
@@ -173,8 +171,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		if (saveFile.exists())
 		{
 			if (confirm) {
-				int choice = this.ui.displayWarningDialog("Overwrite " + saveFile.getName() + "?", "Overwrite");
-				if (choice != JOptionPane.OK_OPTION) {
+				if (!this.ui.displayWarningDialog("Overwrite " + saveFile.getName() + "?", "Overwrite")) {
 					return;
 				}
 			}
@@ -319,9 +316,9 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		for (Object item : qualities) {
 			if (item instanceof Map<?,?>) {
 				Map<String, Object> quality = (Map<String, Object>) item;
-				if (JSONUtil.getInteger(quality, "AssociatedQualityId") == 102889) {
+				if (JSONUtil.getLong(quality, "AssociatedQualityId") == 102889) {
 					// Need to find the EquippedPossession/AssociatedQualityId to find the Ship definition.
-					int shipId = JSONUtil.getInteger(quality,  "EquippedPossession", "AssociatedQualityId");
+					long shipId = JSONUtil.getLong(quality,  "EquippedPossession", "AssociatedQualityId");
 					Ship shipBase = null; 
 					List<QualityItem> ships = this.configurationQualities.GetQualities(Ship.categoryName);
 					for (QualityItem shipCandidate : ships) {
@@ -392,7 +389,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 				if (saveQuality != null) {
 					this.addQualityToUI(item, saveQuality);
 					if (item.isCargo() && item.getSlot() == null) {
-						this.cargoQuantity += JSONUtil.getInteger(saveQuality, "Level");
+						this.cargoQuantity += JSONUtil.getLong(saveQuality, "Level");
 					}
 				} else {
 					this.addQualityToUI(item);
@@ -400,8 +397,8 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 			}
 		}
 
-		this.cargoQuantity += JSONUtil.getInteger(this.fuelQuality, "Level") + JSONUtil.getInteger(this.suppliesQuality, "Level");
-		this.ui.usedCapacity.setText(Integer.toString(this.cargoQuantity));
+		this.cargoQuantity += JSONUtil.getLong(this.fuelQuality, "Level") + JSONUtil.getLong(this.suppliesQuality, "Level");
+		this.ui.usedCapacity.setText(Long.toString(this.cargoQuantity));
 	}
 
 	/**
@@ -655,14 +652,14 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	public void onValueChanged(QualityItemUI ui, QualityItem item, Map<String, Object> saveItem)
 	{
 		if (item.isCargo()) {
-			int oldValue = JSONUtil.getInteger(saveItem, "Level");
-			int newValue = Integer.parseInt(ui.getValue());
+			long oldValue = JSONUtil.getLong(saveItem, "Level");
+			long newValue = Long.parseLong(ui.getValue());
 			SSSaveEditor.this.cargoQuantity += newValue - oldValue;
 			// Save item may be null for pre-defined Quality input fields (on the display panels).
 			if (saveItem != null) {
 				saveItem.put("Level",  new Long(newValue));
 			}
-			SSSaveEditor.this.ui.usedCapacity.setText(Integer.toString(SSSaveEditor.this.cargoQuantity));
+			SSSaveEditor.this.ui.usedCapacity.setText(Long.toString(SSSaveEditor.this.cargoQuantity));
 		}		
 	}
 

@@ -47,7 +47,7 @@ public class Companion extends QualityItem
 	 */
 	public Companion(Map<String, Object> quality)
 	{
-		super(JSONUtil.getString(quality, "Name"), JSONUtil.getInteger(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Companion.categoryName);
+		super(JSONUtil.getString(quality, "Name"), JSONUtil.getLong(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Companion.categoryName);
 		// Other nodes of interest:
 		//   AvailableAt: Text, e.g. "Sometimes available for hire in London."
 		//   Enhancements: Qualities enhanced by this Companion, e.g. Mirrors will be

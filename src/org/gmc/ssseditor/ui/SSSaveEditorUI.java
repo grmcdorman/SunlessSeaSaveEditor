@@ -107,6 +107,7 @@ public class SSSaveEditorUI {
 	public void initialize()
 	{
 		NumberFormat format = NumberFormat.getInstance();
+		format.setGroupingUsed(false);
 	    SSSaveEditorUI.formatter = new NumberFormatter(format);
 	    SSSaveEditorUI.formatter.setValueClass(Integer.class);
 	    SSSaveEditorUI.formatter.setMinimum(0);
@@ -330,41 +331,76 @@ public class SSSaveEditorUI {
 		menuBar.add(helpMenu);
 	}
 
-	public int displayWarningDialog(String message, String title)
+	/**
+	 * Show a warning confirmation dialog, and collect the result.
+	 * @param message Message to show.
+	 * @param title Title of dialog.
+	 * @return 'true' if OK ias chosen.
+	 */
+	public boolean displayWarningDialog(String message, String title)
 	{
-		return JOptionPane.showConfirmDialog(this.frame, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+		return JOptionPane.showConfirmDialog(this.frame, message, title, JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION;
 	}
 	
+	/**
+	 * Display an informational message dialog.
+	 * @param message Message.
+	 * @param title Title of dialog.
+	 */
 	public void displayMessageDialog(String message, String title)
 	{
 		JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 	
+	/**
+	 * Display an error message dialog.
+	 * @param message Message.
+	 * @param title Title of dialog.
+	 */
 	public void displayErrorDialog(String message, String title)
 	{
 		JOptionPane.showMessageDialog(this.frame, message, title, JOptionPane.ERROR_MESSAGE);
 	}
 
-	public void setShipCrewCapacity(int capacity)
+	/**
+	 * Set the ship crew capacity.
+	 * @param capacity Crew capacity.
+	 */
+	public void setShipCrewCapacity(long capacity)
 	{
-		this.shipCrewCapacity.setText(Integer.toString(capacity));
+		this.shipCrewCapacity.setText(Long.toString(capacity));
 	}
 
-	public void setShipCargoCapacity(int capacity)
+	/**
+	 * Set the ship cargo capacity.
+	 * @param capacity Cargo capacity.
+	 */
+	public void setShipCargoCapacity(long capacity)
 	{
-		this.shipCargoCapacity.setText(Integer.toString(capacity));
+		this.shipCargoCapacity.setText(Long.toString(capacity));
 	}
 
-	public void setShipWeight(int weight)
+	/**
+	 * Set the ship weight.
+	 * @param weight Weight.
+	 */
+	public void setShipWeight(long weight)
 	{
-		this.shipWeight.setText(Integer.toString(weight));
+		this.shipWeight.setText(Long.toString(weight));
 	}
 
-	public void setShipMaxHull(int hull)
+	/**
+	 * Set the ship maximum hull value.
+	 * @param hull Max value.
+	 */
+	public void setShipMaxHull(long hull)
 	{
-		this.shipMaxHull.setText(Integer.toString(hull));
+		this.shipMaxHull.setText(Long.toString(hull));
 	}
 
+	/**
+	 * Handle Open from the File menu.
+	 */
 	private void onFileOpen()
 	{
 		for (ISaveEditorEvents handler : this.eventHandlers)
@@ -373,6 +409,9 @@ public class SSSaveEditorUI {
 		}
 	}
 
+	/**
+	 * Handle Save from the File menu.
+	 */
 	private void onFileSave()
 	{
 		for (ISaveEditorEvents handler : this.eventHandlers)
@@ -381,7 +420,9 @@ public class SSSaveEditorUI {
 		}
 	}
 
-
+	/**
+	 * Handle Save As from the File menu.
+	 */
 	private void onFileSaveAs()
 	{
 		for (ISaveEditorEvents handler : this.eventHandlers)
@@ -389,6 +430,7 @@ public class SSSaveEditorUI {
 			handler.onFileSaveAs();
 		}
 	}
+
 	/**
 	 * Create the basic inventory panel, containing echos, fuel, and supplies.
 	 * @param dataPanel Parent panel.

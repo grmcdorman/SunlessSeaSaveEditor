@@ -29,33 +29,33 @@ public class QualityItem
 	/**
 	 * All items known, by ID.
 	 */
-	static Map<Integer, QualityItem> allItems = new HashMap<Integer, QualityItem>();
+	static Map<Long, QualityItem> allItems = new HashMap<Long, QualityItem>();
 
 	/**
 	 * Basic constructor for a QualityItem, with just a name and tag. This QualityItem will not have a Category.
 	 * @param name QualityItem name.
-	 * @param tag QualityItem tag.
+	 * @param id QualityItem ID.
 	 */
-	public QualityItem(String name, int tag)
+	public QualityItem(String name, long id)
 	{
-		this(name, tag, null, "");
+		this(name, id, null, "");
 	}
 
 	/**
 	 * Construct a QualityItem.
 	 * @param name QualityItem name; used on the UI.
-	 * @param tag Tag; or "Id" field in the JSON.
+	 * @param id "Id" field in the JSON.
 	 * @param slot Assigned slot. May be null.
 	 * @param category QualityItem's category.
 	 */
-	public QualityItem(String name, int tag, String slot, String category)
+	public QualityItem(String name, Long id, String slot, String category)
 	{
-		this.tag = tag;
+		this.tag = id;
 		this.name = name;
 		this.slot = slot;
 		this.category = category;
 		
-		QualityItem.allItems.put(tag, this);
+		QualityItem.allItems.put(id, this);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class QualityItem
 	 * Return the set of known tags.
 	 * @return Tag set.
 	 */
-	public static Set<Integer> getKnownItemTags()
+	public static Set<Long> getKnownItemTags()
 	{
 		return QualityItem.allItems.keySet();
 	}

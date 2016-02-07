@@ -130,7 +130,7 @@ public class QualityItemUI {
 	{
 		this.saveItem = saveItem;
 		
-		this.valueField.setText(Integer.toString(JSONUtil.getInteger(saveItem, "Level")));
+		this.valueField.setText(Long.toString(JSONUtil.getLong(saveItem, "Level")));
 		this.addButton.setVisible(false);
 		this.valueField.setVisible(true);
 		this.deleteButton.setVisible(true);
@@ -172,7 +172,7 @@ public class QualityItemUI {
 	 */
 	public void setValue(Map<String, Object> quality)
 	{
-		this.setValue(Integer.toString(JSONUtil.getInteger(quality, "Level")));
+		this.setValue(Long.toString(JSONUtil.getLong(quality, "Level")));
 	}
 	
 	/**

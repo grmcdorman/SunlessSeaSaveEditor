@@ -56,7 +56,7 @@ public class Ship extends QualityItem
 		// within the EquippedPossession node. I suspect the former is the slot,
 		// and the latter the actual entity.
 		// AssignToSlot will have ID 102889? and Tag "Ship Equipment Slot".
-		super(JSONUtil.getString(quality, "Name"), JSONUtil.getInteger(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Ship.categoryName);
+		super(JSONUtil.getString(quality, "Name"), JSONUtil.getLong(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), Ship.categoryName);
 		this.setQuality(quality);
 
 		// Extract nodes of interest.
@@ -71,9 +71,9 @@ public class Ship extends QualityItem
 			for (Object enhancementItem: enhancements) {
 				if (enhancementItem instanceof Map<?, ?>) {
 					Map<String, Object> enhancement = (Map<String, Object>) enhancementItem;
-					int associatedId = JSONUtil.getInteger(enhancement, "AssociatedQuality", "Id");
+					long associatedId = JSONUtil.getLong(enhancement, "AssociatedQuality", "Id");
 					if (associatedId > 0) {
-						switch (associatedId) {
+						switch ((int) associatedId) {
 							case 106992: // "Quarters":
 							{
 								this.crewCapacity = enhancement;
@@ -108,7 +108,7 @@ public class Ship extends QualityItem
 	 */
 	public Ship(Ship copyFrom, Map<String, Object> quality)
 	{
-		super(copyFrom.getName(), (int) copyFrom.getTag(), copyFrom.getSlot(), Ship.categoryName);
+		super(copyFrom.getName(), copyFrom.getTag(), copyFrom.getSlot(), Ship.categoryName);
 		this.crewCapacity = copyFrom.crewCapacity;
 		this.weight = copyFrom.weight;
 		this.maxHull = copyFrom.maxHull;
@@ -186,9 +186,9 @@ public class Ship extends QualityItem
 	 * Get the crew capacity. 0 if not known.
 	 * @return Crew capacity.
 	 */
-	public int getCrewCapacity()
+	public long getCrewCapacity()
 	{
-		return this.crewCapacity != null ? JSONUtil.getInteger(this.crewCapacity, "Level") : 0;
+		return this.crewCapacity != null ? JSONUtil.getLong(this.crewCapacity, "Level") : 0;
 	}
 
 	/**
@@ -206,9 +206,9 @@ public class Ship extends QualityItem
 	 * Get the weight. 0 if not known.
 	 * @return  Weight.
 	 */
-	public int getWeight()
+	public long getWeight()
 	{
-		return this.weight != null ? JSONUtil.getInteger(this.weight, "Level") : 0;
+		return this.weight != null ? JSONUtil.getLong(this.weight, "Level") : 0;
 	}
 
 	/**
@@ -226,9 +226,9 @@ public class Ship extends QualityItem
 	 * Get the hold capacity. 0 if not known.
 	 * @return Hold capacity.
 	 */
-	public int getHoldCapacity()
+	public long getHoldCapacity()
 	{
-		return this.holdCapacity != null ? JSONUtil.getInteger(this.holdCapacity, "Level") : 0;
+		return this.holdCapacity != null ? JSONUtil.getLong(this.holdCapacity, "Level") : 0;
 	}
 
 	/**
@@ -246,9 +246,9 @@ public class Ship extends QualityItem
 	 * Get the maximum hull value. 0 if not known.
 	 * @return Maximum hull value.
 	 */
-	public int getMaxHull()
+	public long getMaxHull()
 	{
-		return this.maxHull != null ? JSONUtil.getInteger(this.maxHull, "Level") : 0;
+		return this.maxHull != null ? JSONUtil.getLong(this.maxHull, "Level") : 0;
 	}
 
 	/**

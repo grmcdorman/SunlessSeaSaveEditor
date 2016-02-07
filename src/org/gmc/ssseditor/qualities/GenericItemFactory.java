@@ -21,7 +21,7 @@ class GenericItemFactory implements IQualityFactory
 	@Override
 	public QualityItem createItem(Map<String, Object> quality)
 	{
-		return new QualityItem(JSONUtil.getString(quality, "Name"), JSONUtil.getInteger(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), this.category);
+		return new QualityItem(JSONUtil.getString(quality, "Name"), JSONUtil.getLong(quality, "Id"), JSONUtil.getString(quality, "AssignToSlot", "Name"), this.category);
 	}
 
 	@Override

@@ -35,12 +35,12 @@ public class JSONUtil {
 		return last;
 	}
 
-	public static int getInteger(Map<String, Object> json, String... keys)
-	{
-		Long value = JSONUtil.getLong(json, keys);
-		return value != null ? value.intValue() : -1;
-	}
-
+	/**
+	 * Get a Long value from a key path.
+	 * @param json JSON root.
+	 * @param keys Path to target key.
+	 * @return Long value; null if not found.
+	 */
 	public static Long getLong(Map<String, Object> json, String... keys)
 	{
 		Object value = JSONUtil.getKeyValue(json, keys);
@@ -51,6 +51,12 @@ public class JSONUtil {
 		return null;
 	}
 
+	/**
+	 * Get a String value from a key path.
+	 * @param json JSON root.
+	 * @param keys Path to target key.
+	 * @return String value; null if not found.
+	 */
 	public static String getString(Map<String, Object> json, String... keys)
 	{
 		Object value = JSONUtil.getKeyValue(json, keys);
@@ -61,6 +67,12 @@ public class JSONUtil {
 		return null;
 	}
 	
+	/**
+	 * Get an Object, as a Map, from a key path.
+	 * @param json JSON root.
+	 * @param keys Path to target key.
+	 * @return Object; null if not found or result is not Map<String, Object>.
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, Object> getObject(Map<String, Object> json, String... keys)
 	{
@@ -72,6 +84,12 @@ public class JSONUtil {
 		return null;
 	}
 
+	/**
+	 * Get a ArrayList<Object> value from a key path.
+	 * @param json JSON root.
+	 * @param keys Path to target key.
+	 * @return ArrayList; null if not found or result is not ArrayList<Object>.
+	 */
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Object> getArray(Map<String, Object> json, String... keys)
 	{
