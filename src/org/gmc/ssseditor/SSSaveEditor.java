@@ -235,7 +235,8 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 			}
 			
 			this.ui.setTitle(source.getName());
-			
+			this.ui.setWindowTitleSuffix(source.getName());
+
 			this.ui.saveMenuItem.setEnabled(true);
 			this.ui.saveAsMenuItem.setEnabled(true);
 			

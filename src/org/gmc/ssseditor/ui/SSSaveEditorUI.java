@@ -118,6 +118,7 @@ public class SSSaveEditorUI {
 
 	    this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    this.frame.setResizable(true);
+	    this.setWindowTitleSuffix(null);
 
 		this.createMenuBar();
 		
@@ -171,23 +172,51 @@ public class SSSaveEditorUI {
 		this.frame.pack();
 	}
 
+	/**
+	 * Add an event handler.
+	 * @param handler Event handler.
+	 */
 	public void addEventHandler(ISaveEditorEvents handler)
 	{
 		this.eventHandlers.add(handler);
 	}
 	
+	/**
+	 * Remove an event handler.
+	 * @param handler Event handler.
+	 */
 	public void removeEventHandler(ISaveEditorEvents handler)
 	{
 		this.eventHandlers.remove(handler);
 	}
 
+	/**
+	 * Make the UI visible.
+	 */
 	public void setVisible()
 	{
 		this.frame.setVisible(true);
 	}
 
 	/**
-	 * Set the title text.
+	 * Set the suffix on the window title. This is intended to be a file name.
+	 * If null, set "no file".
+	 * @param titleSuffix Suffix (file name). 
+	 */
+	public void setWindowTitleSuffix(String titleSuffix)
+	{
+		if (titleSuffix == null || titleSuffix.isEmpty())
+		{
+			this.frame.setTitle("Sunless Sea Save Editor (no file)");
+		}
+		else
+		{
+			this.frame.setTitle("Sunless Sea Save Editor: " + titleSuffix);
+		}
+	}
+
+	/**
+	 * Set the title text on the title panel.
 	 * @param text New title text.
 	 */
 	public void setTitle(String text)
