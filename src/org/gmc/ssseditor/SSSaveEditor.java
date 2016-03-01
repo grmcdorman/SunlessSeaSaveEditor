@@ -635,7 +635,7 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	 */
 	private String getSunlessSeaDirectory(String subdirectory)
 	{
-		String appDataDirectory
+		String appDataDirectory;
 		String osName = System.getProperty("os.name");
 
 		if (osName.contains("OS X")) {
