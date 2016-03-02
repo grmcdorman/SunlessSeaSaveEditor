@@ -635,12 +635,26 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 	 */
 	private String getSunlessSeaDirectory(String subdirectory)
 	{
-		String appDataDirectory = System.getenv("APPDATA");
-		if (appDataDirectory != null) {
-			return appDataDirectory + "/../LocalLow/Failbetter Games/Sunless Sea/" + subdirectory;
+		String appDataDirectory;
+		String osName = System.getProperty("os.name");
+
+		if (osName.contains("OS X")) {
+				appDataDirectory = (System.getProperty("user.home") + "/Library/Application Support/unity.Failbetter Games.Sunless Sea/");
+			} else if (osName.contains("Windows")) {
+				appDataDirectory = (System.getenv("APPDATA") + "/../LocalLow/Failbetter Games/Sunless Sea/");
+			} else if (osName.contains("Linux")) {
+				appDataDirectory = (System.getProperty("user.home") + "/.config/unity3d/Failbetter Games/Sunless Sea/");
+			} else {
+				appDataDirectory = null;
+				System.out.println ("Not running on a supported operating system.");
+			}
 		}
 
-		return null;
+		if (appDataDirectory != null) {
+			return appDataDirectory + subdirectory;
+		} else {
+			return null;
+		}
 	}
 
 	@Override
