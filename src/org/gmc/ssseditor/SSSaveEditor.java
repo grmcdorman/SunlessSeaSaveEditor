@@ -639,22 +639,22 @@ public class SSSaveEditor implements SSSaveEditorUI.ISaveEditorEvents, IQualityI
 		String osName = System.getProperty("os.name");
 
 		if (osName.contains("OS X")) {
-				appDataDirectory = (System.getProperty("user.home") + "/Library/Application Support/unity.Failbetter Games.Sunless Sea/");
-			} else if (osName.contains("Windows")) {
-				appDataDirectory = (System.getenv("APPDATA") + "/../LocalLow/Failbetter Games/Sunless Sea/");
-			} else if (osName.contains("Linux")) {
-				appDataDirectory = (System.getProperty("user.home") + "/.config/unity3d/Failbetter Games/Sunless Sea/");
-			} else {
-				appDataDirectory = null;
-				System.out.println ("Not running on a supported operating system.");
-			}
-		}
-
-		if (appDataDirectory != null) {
-			return appDataDirectory + subdirectory;
+			appDataDirectory = (System.getProperty("user.home") + "/Library/Application Support/unity.Failbetter Games.Sunless Sea/");
+		} else if (osName.contains("Windows")) {
+			appDataDirectory = (System.getenv("APPDATA") + "/../LocalLow/Failbetter Games/Sunless Sea/");
+		} else if (osName.contains("Linux")) {
+			appDataDirectory = (System.getProperty("user.home") + "/.config/unity3d/Failbetter Games/Sunless Sea/");
 		} else {
+			this.ui.displayErrorDialog("Not Supported", "Not running on a supported operating system, things will misbehave.");
 			return null;
 		}
+
+		File location = new File(appDataDirectory + subdirectory);
+		if (!location.exists() || !location.isDirectory()) {
+			this.ui.displayErrorDialog("Missing Game Directory", "Cannot find Sunless Sea user save directory, things will misbehave");
+		}
+
+		return appDataDirectory + subdirectory;
 	}
 
 	@Override
